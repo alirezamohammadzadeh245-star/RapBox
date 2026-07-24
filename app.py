@@ -15,7 +15,8 @@ def home():
 
 @app.route("/setendpoint")
 def set_endpoint():
-    url = f"https://botapi.rubika.ir/v3/{RUBIKA_TOKEN}/updateBotEndpoints"
+
+    api_url = f"https://botapi.rubika.ir/v3/{RUBIKA_TOKEN}/updateBotEndpoints"
 
     data = {
         "url": "https://rapbox-1.onrender.com/webhook",
@@ -24,15 +25,24 @@ def set_endpoint():
 
     try:
         response = requests.post(
-            url,
+            api_url,
             json=data,
-            timeout=10
+            headers={
+                "Content-Type": "application/json"
+            },
+            timeout=15
         )
 
-        return response.text
+        return {
+            "rubika_response": response.text,
+            "sent_url": data["url"],
+            "sent_type": data["type"]
+        }
 
     except Exception as e:
-        return str(e)
+        return {
+            "error": str(e)
+        }
 
 
 if __name__ == "__main__":
