@@ -5,7 +5,6 @@ from routes import setup_routes
 
 app = Flask(__name__)
 
-# ثبت Routeهای اصلی
 setup_routes(app)
 
 
@@ -14,42 +13,46 @@ def home():
     return "RapBox Bot Online ✅"
 
 
-# برای تست اینکه Render درست کار می‌کند
-@app.route("/test")
-def test():
-    return "OK"
+@app.route("/me")
+def me():
+    url = f"https://botapi.rubika.ir/v3/{RUBIKA_TOKEN}/getMe"
+
+    try:
+        response = requests.post(
+            url,
+            timeout=10
+        )
+
+        return response.text
+
+    except Exception as e:
+        return str(e)
 
 
-# ثبت Webhook در روبیکا
 @app.route("/setendpoint")
 def set_endpoint():
+    url = f"https://botapi.rubika.ir/v3/{RUBIKA_TOKEN}/updateBotEndpoints"
 
-    endpoint_url = "https://rapbox-1.onrender.com/webhook"
-
-    api_url = f"https://botapi.rubika.ir/v3/{RUBIKA_TOKEN}/updateBotEndpoints"
-
-    payload = {
-        "url": endpoint_url,
+    data = {
+        "url": "https://rapbox-1.onrender.com/webhook",
         "type": "ReceiveUpdate"
     }
 
     try:
         response = requests.post(
-            api_url,
-            json=payload,
+            url,
+            json=data,
             timeout=10
         )
 
         return {
             "rubika_response": response.text,
             "sent_type": "ReceiveUpdate",
-            "sent_url": endpoint_url
+            "sent_url": data["url"]
         }
 
     except Exception as e:
-        return {
-            "error": str(e)
-        }, 500
+        return {"error": str(e)}
 
 
 if __name__ == "__main__":
