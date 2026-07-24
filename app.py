@@ -8,11 +8,6 @@ app = Flask(__name__)
 setup_routes(app)
 
 
-@app.route("/")
-def home():
-    return "RapBox Bot Online ✅"
-
-
 @app.route("/setendpoint")
 def set_endpoint():
     url = f"https://botapi.rubika.ir/v3/{RUBIKA_TOKEN}/updateBotEndpoints"
