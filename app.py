@@ -1,11 +1,18 @@
-from flask import Flask
+from flask import Flask, request, jsonify
 import requests
+
 from config import RUBIKA_TOKEN
 from routes import setup_routes
 
 app = Flask(__name__)
 
+# ثبت مسیرهای بات
 setup_routes(app)
+
+
+@app.route("/")
+def home():
+    return "RapBox Bot Online ✅"
 
 
 @app.route("/setendpoint")
