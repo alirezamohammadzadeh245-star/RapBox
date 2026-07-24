@@ -1,12 +1,10 @@
-from flask import Flask, request, jsonify
+from flask import Flask
 import requests
-
 from config import RUBIKA_TOKEN
 from routes import setup_routes
 
 app = Flask(__name__)
 
-# ثبت مسیرهای بات
 setup_routes(app)
 
 
@@ -24,10 +22,21 @@ def set_endpoint():
         "type": "ReceiveUpdate"
     }
 
-    response = requests.post(url, json=data)
+    try:
+        response = requests.post(
+            url,
+            json=data,
+            timeout=10
+        )
 
-    return response.text
+        return response.text
+
+    except Exception as e:
+        return str(e)
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=10000)
+    app.run(
+        host="0.0.0.0",
+        port=10000
+    )
