@@ -5,13 +5,7 @@ from routes import setup_routes
 
 app = Flask(__name__)
 
-
 setup_routes(app)
-
-
-@app.route("/")
-def home():
-    return "RapBox Bot Online ✅"
 
 
 @app.route("/setendpoint")
@@ -19,11 +13,10 @@ def set_endpoint():
     url = f"https://botapi.rubika.ir/v3/{RUBIKA_TOKEN}/updateBotEndpoint"
 
     data = {
-        "url": "https://rapbox-1.onrender.com/webhook"
+        "url": "https://rapbox-3.onrender.com/webhook"
     }
 
     response = requests.post(url, json=data)
-
     return response.text
 
 
