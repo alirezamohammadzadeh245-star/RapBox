@@ -1,12 +1,13 @@
-from flask import Flask, request, jsonify
+from flask import Flask
 import requests
 
 from config import RUBIKA_TOKEN
 from routes import setup_routes
 
+
 app = Flask(__name__)
 
-# ثبت تمام Routeهای اصلی بات
+# تمام Routeهای اصلی از routes.py
 setup_routes(app)
 
 
@@ -15,78 +16,41 @@ def home():
     return "RapBox Bot Online ✅"
 
 
-# تست ساده برای اطمینان از اینکه Render می‌تواند
-# این URL را در اختیار روبیکا قرار دهد
-@app.route("/testurl", methods=["GET", "POST"])
+@app.route("/testurl")
 def testurl():
-    return jsonify({
+    return {
         "status": "ok",
-        "url": "https://rapbox-1.onrender.com/testurl"
-    })
+        "url": "https://rapbox-1.onrender.com/webhook"
+    }
 
 
-# Webhook اصلی بات
-@app.route("/webhook", methods=["POST", "GET"])
-def webhook():
-    if request.method == "GET":
-        return jsonify({
-            "status": "ok",
-            "message": "Webhook Online"
-        })
-
-    try:
-        data = request.get_json(silent=True)
-
-        print("=== RUBIKA WEBHOOK ===")
-        print(data)
-
-        # فعلاً فقط تأیید دریافت درخواست
-        return jsonify({
-            "status": "ok"
-        }), 200
-
-    except Exception as e:
-        print("WEBHOOK ERROR:", str(e))
-
-        return jsonify({
-            "status": "error",
-            "message": str(e)
-        }), 200
-
-
-# تنظیم Endpoint روبیکا
-@app.route("/setendpoint", methods=["GET"])
+@app.route("/setendpoint")
 def set_endpoint():
-
-    rubika_url = (
-        f"https://botapi.rubika.ir/v3/"
-        f"{RUBIKA_TOKEN}/updateBotEndpoints"
-    )
+    url = f"https://botapi.rubika.ir/v3/{RUBIKA_TOKEN}/updateBotEndpoints"
 
     data = {
-        "url": "https://rapbox-1.onrender.com/testurl",
+        "url": "https://rapbox-1.onrender.com/webhook",
         "type": "ReceiveUpdate"
     }
 
     try:
         response = requests.post(
-            rubika_url,
+            url,
             json=data,
-            timeout=20
+            timeout=10
         )
 
-        return jsonify({
+        return {
             "rubika_response": response.text,
             "sent_type": "ReceiveUpdate",
-            "sent_url": "https://rapbox-1.onrender.com/testurl"
-        })
+            "sent_url": data["url"]
+        }
 
     except Exception as e:
-
-        return jsonify({
+        return {
             "status": "error",
             "message": str(e)
-        }), 500
+        }, 500
 
 
 if __name__ == "__main__":
